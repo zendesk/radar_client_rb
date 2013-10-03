@@ -1,6 +1,6 @@
 require_relative './resource.rb'
 
-module RadarClientRb
+module Radar
   class Client
     attr_accessor :redis, :account_name, :user_id
 

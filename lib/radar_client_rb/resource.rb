@@ -1,4 +1,4 @@
-module RadarClientRb
+module Radar
   class Resource
     def initialize(client, name)
       @client = client
