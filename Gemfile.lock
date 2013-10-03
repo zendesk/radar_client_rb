@@ -1,0 +1,27 @@
+PATH
+  remote: .
+  specs:
+    radar_client_rb (0.0.1)
+      redis
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    fakeredis (0.4.2)
+      redis (~> 3.0.0)
+    metaclass (0.0.1)
+    minitest (5.0.8)
+    mocha (0.14.0)
+      metaclass (~> 0.0.1)
+    rake (10.1.0)
+    redis (3.0.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  fakeredis
+  minitest
+  mocha
+  radar_client_rb!
+  rake
