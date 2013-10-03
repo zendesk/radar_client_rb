@@ -31,9 +31,9 @@ module RadarClientRb
       super(client, "status:/#{client.account_name}/#{name}")
     end
 
-    def get
-      result = @client.redis.hget(@name, @client.agent_id)
-      result ? JSON.parse(result) : nil
+    def get(key)
+      result = @client.redis.hget(@name, key)
+      result ? JSON.parse(result, :quirks_mode => true) : nil
     end
 
     def set(key, value)
@@ -50,10 +50,10 @@ module RadarClientRb
 
     def get
       # Unfortunately we can't apply any maxAge policies.
-      result_json = @client.redis.zrange(@name, -100, -1, :with_scores => true)
+      result_arr = @client.redis.zrange(@name, -100, -1, :with_scores => true)
       result = []
-      result_json.each do |message_json, time|
-        message = JSON.parse(message_json)
+      result_arr.each do |message_json, time|
+        message = JSON.parse(message_json, :quirks_mode => true)
         result << [message, time]
       end
       result
