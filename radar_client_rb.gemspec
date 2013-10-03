@@ -4,7 +4,7 @@ require 'radar_client_rb/version'
 
 Gem::Specification.new do |gem|
   gem.name = 'radar_client_rb'
-  gem.version = Radar::RubyClient::VERSION
+  gem.version = Radar::Client::VERSION
   gem.files = Dir["lib/**/*"] + %w(README.md)
   gem.summary = "Read/Write Radar Resources from Redis through Ruby"
   gem.description = gem.summary
