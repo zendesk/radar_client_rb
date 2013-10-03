@@ -3,7 +3,7 @@ require 'radar_client_rb'
 require 'fakeredis'
 require 'mocha/setup'
 
-describe RadarClientRb::Client do
+describe Radar::Client do
   let(:fakeredis) { FakeRedis::Redis.new }
   let(:user_id1) { 123 }
   let(:user_id2) { 456 }
@@ -16,16 +16,16 @@ describe RadarClientRb::Client do
   let(:client_id5) { 'asjkdhuiajahsdiuhajk' }
   let(:account_name) { 'support' }
   let(:scope) { 'scope1' }
-  let(:client) { RadarClientRb::Client.new(fakeredis, account_name, user_id1) }
+  let(:client) { Radar::Client.new(fakeredis, account_name, user_id1) }
 
   it 'can be instantiated' do
     assert client
   end
 
   it 'can get all three resources' do
-    assert_instance_of RadarClientRb::Presence, client.presence('test')
-    assert_instance_of RadarClientRb::Status, client.status('test')
-    assert_instance_of RadarClientRb::MessageList, client.message('test')
+    assert_instance_of Radar::Presence, client.presence('test')
+    assert_instance_of Radar::Status, client.status('test')
+    assert_instance_of Radar::MessageList, client.message('test')
   end
 
   describe "presence" do
