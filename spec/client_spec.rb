@@ -135,7 +135,8 @@ describe Radar::Client do
     end
 
     it 'can set a status' do
-      fakeredis.stubs(:publish)
+      fakeredis.expects(:publish).with(key, { :to => key, :key => user_id4, :value => { :state => 'updated'} }.to_json)
+      fakeredis.expects(:expire).with(key, 12*60*60)
       client.status(scope).set(user_id4, { :state => 'updated' })
       assert_equal fakeredis.hget(key, user_id4), { :state => 'updated' }.to_json
     end
