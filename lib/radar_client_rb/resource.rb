@@ -39,7 +39,7 @@ module Radar
     def set(key, value)
       @client.redis.hset(@name, key, value.to_json)
       @client.redis.expire(@name, 12*60*60)
-      @client.redis.publish(@name, { :to => @name, :key => key, :value => value }.to_json)
+      @client.redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
     end
   end
 
