@@ -1,5 +1,7 @@
 ### Radar Ruby Client
 
+This gem lets you read radar resources directly from redis. You can also set radar Status resource.
+
 ```ruby
 
 require 'radar_client_rb'
