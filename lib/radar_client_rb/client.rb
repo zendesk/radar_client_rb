@@ -4,10 +4,12 @@ module Radar
   class Client
     attr_accessor :redis, :account_name, :user_id
 
-    def initialize(redis, account_name, user_id)
-      @redis = redis
+    def self.configure(&blk)
+      @@redis_retriever = blk
+    end
+
+    def initialize(account_name)
       @account_name = account_name
-      @user_id = user_id
     end
 
     def presence(name)
@@ -20,6 +22,10 @@ module Radar
 
     def message(name)
       MessageList.new(self, name)
+    end
+
+    def redis
+      @@redis_retriever.call(@account_name) if defined?(@@redis_retriever) && @@redis_retriever
     end
   end
 end
