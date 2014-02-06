@@ -8,7 +8,7 @@ module Radar
 
   class Presence < Resource
     def initialize(client, name)
-      super(client, "presence:/#{client.account_name}/#{name}")
+      super(client, "presence:/#{client.subdomain}/#{name}")
     end
 
     def get
@@ -28,7 +28,7 @@ module Radar
 
   class Status < Resource
     def initialize(client, name)
-      super(client, "status:/#{client.account_name}/#{name}")
+      super(client, "status:/#{client.subdomain}/#{name}")
     end
 
     def get(key)
@@ -46,7 +46,7 @@ module Radar
 
   class MessageList < Resource
     def initialize(client, name)
-      super(client, "message:/#{client.account_name}/#{name}")
+      super(client, "message:/#{client.subdomain}/#{name}")
     end
 
     def get
