@@ -16,7 +16,13 @@ describe Radar::Client do
   let(:client_id5) { 'asjkdhuiajahsdiuhajk' }
   let(:account_name) { 'support' }
   let(:scope) { 'scope1' }
-  let(:client) { Radar::Client.new(fakeredis, account_name, user_id1) }
+  let(:client) { Radar::Client.new(account_name) }
+
+  before do
+    Radar::Client.configure do
+      fakeredis
+    end
+  end
 
   it 'can be instantiated' do
     assert client
