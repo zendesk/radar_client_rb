@@ -14,9 +14,15 @@ describe Radar::Client do
   let(:client_id3) { 'lkjasdiHJKSAHDIUHkJS' }
   let(:client_id4) { 'asdkjalsdkjaksdhasdk' }
   let(:client_id5) { 'asjkdhuiajahsdiuhajk' }
-  let(:account_name) { 'support' }
+  let(:subdomain) { 'support' }
   let(:scope) { 'scope1' }
-  let(:client) { Radar::Client.new(fakeredis, account_name, user_id1) }
+  let(:client) { Radar::Client.new(subdomain) }
+
+  before do
+    Radar::Client.define_redis_retriever do |subdomain|
+      fakeredis
+    end
+  end
 
   it 'can be instantiated' do
     assert client
@@ -29,7 +35,7 @@ describe Radar::Client do
   end
 
   describe "presence" do
-    let(:key) { "presence:/#{account_name}/#{scope}" }
+    let(:key) { "presence:/#{subdomain}/#{scope}" }
     let(:presence1) do
       {
         :userId => user_id1,
@@ -114,7 +120,7 @@ describe Radar::Client do
   end
 
   describe "status" do
-    let(:key) { "status:/#{account_name}/#{scope}" }
+    let(:key) { "status:/#{subdomain}/#{scope}" }
     let(:status1) { 'status1' }
     let(:status2) { { 'hello' => 'world' } }
 
@@ -143,7 +149,7 @@ describe Radar::Client do
   end
 
   describe 'message' do
-    let(:key) { "message:/#{account_name}/#{scope}" }
+    let(:key) { "message:/#{subdomain}/#{scope}" }
     let(:message1) { 'message 1' }
     let(:message2) { { 'hello' => 'world' } }
 
