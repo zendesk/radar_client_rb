@@ -19,7 +19,7 @@ describe Radar::Client do
   let(:client) { Radar::Client.new(account_name) }
 
   before do
-    Radar::Client.configure do
+    Radar::Client.configure do |subdomain|
       fakeredis
     end
   end
