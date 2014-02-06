@@ -4,7 +4,7 @@ module Radar
   class Client
     attr_accessor :subdomain
 
-    def self.configure(&blk)
+    def self.define_redis_retriever(&blk)
       @@redis_retriever = blk
     end
 
