@@ -2,12 +2,14 @@ require_relative './resource.rb'
 
 module Radar
   class Client
-    attr_accessor :redis, :account_name, :user_id
+    attr_accessor :subdomain
 
-    def initialize(redis, account_name, user_id)
-      @redis = redis
-      @account_name = account_name
-      @user_id = user_id
+    def self.define_redis_retriever(&blk)
+      @@redis_retriever = blk
+    end
+
+    def initialize(subdomain)
+      @subdomain = subdomain
     end
 
     def presence(name)
@@ -20,6 +22,10 @@ module Radar
 
     def message(name)
       MessageList.new(self, name)
+    end
+
+    def redis
+      @@redis_retriever.call(@subdomain) if defined?(@@redis_retriever) && @@redis_retriever
     end
   end
 end
