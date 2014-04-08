@@ -4,6 +4,10 @@ module Radar
   class Client
     attr_accessor :subdomain
 
+    def self.redis_retriever_defined?
+      defined?(@@redis_retriever) && @@redis_retriever
+    end
+
     def self.define_redis_retriever(&blk)
       @@redis_retriever = blk
     end
@@ -25,7 +29,7 @@ module Radar
     end
 
     def redis
-      @@redis_retriever.call(@subdomain) if defined?(@@redis_retriever) && @@redis_retriever
+      @@redis_retriever.call(@subdomain) if Client.redis_retriever_defined?
     end
   end
 end
