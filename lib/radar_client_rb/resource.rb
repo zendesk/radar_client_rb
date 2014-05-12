@@ -43,7 +43,7 @@ module Radar
     end
 
     def set(key, value)
-      client_info = ""
+      client_info = "unknown"
       if @client.redis.respond_to?(:client) && @client.redis.client.respond_to?(:host) && @client.redis.client.respond_to?(:port)
         client_info = "Client: #{@client.redis.client.host}:#{@client.redis.client.port}"
       end
