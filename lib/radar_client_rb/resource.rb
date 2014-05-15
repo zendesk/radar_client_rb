@@ -48,10 +48,10 @@ module Radar
         client_info = "Client: #{@client.redis.client.host}:#{@client.redis.client.port}"
       end
 
-      logger.info "Setting Status: #{key}, #{value}, #{client_info}"
       @client.redis.hset(@name, key, value.to_json)
       @client.redis.expire(@name, 12*60*60)
       @client.redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
+      logger.info "Set Status: #{key}, #{value}, #{client_info}"
     end
   end
 
