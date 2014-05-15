@@ -43,14 +43,14 @@ module Radar
     end
 
     def set(key, value)
+      @client.redis.hset(@name, key, value.to_json)
+      @client.redis.expire(@name, 12*60*60)
+      @client.redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
+
       client_info = "unknown"
       if @client.redis.respond_to?(:client) && @client.redis.client.respond_to?(:host) && @client.redis.client.respond_to?(:port)
         client_info = "Client: #{@client.redis.client.host}:#{@client.redis.client.port}"
       end
-
-      @client.redis.hset(@name, key, value.to_json)
-      @client.redis.expire(@name, 12*60*60)
-      @client.redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
       logger.info "Set Status: #{key}, #{value}, #{client_info}"
     end
   end
