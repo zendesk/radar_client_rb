@@ -48,9 +48,11 @@ module Radar
       redis.expire(@name, 12*60*60)
       redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
 
-      client_info = "unknown"
-      if redis.respond_to?(:client) && redis.client.respond_to?(:host) && redis.client.respond_to?(:port)
-        client_info = "Client: #{redis.client.host}:#{redis.client.port}"
+      client = redis.respond_to?(:client) && redis.client
+      client_info = if client && client.respond_to?(:host) && client.respond_to?(:port)
+        "Client: #{client.host}:#{client.port}"
+      else
+        "unknown"
       end
       logger.info "Set Status: #{key}, #{value}, #{client_info}"
     end
