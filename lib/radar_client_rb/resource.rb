@@ -1,63 +1,88 @@
+require "uri"
+
 module Radar
   class Resource
-    def initialize(client, name)
-      @client = client
-      @name = name
-    end
-  end
+    TYPE = "default"
 
-  class Presence < Resource
-    def initialize(client, name)
-      super(client, "presence:/#{client.subdomain}/#{name}")
+    attr_accessor :client, :name
+
+    def initialize(client, scope)
+      @client = client
+      @name = "#{self.class::TYPE}:/#{client.options[:accountName]}/#{scope}"
     end
 
     def get
-      result = {}
-      forty_five_seconds_ago = (Time.now.to_i - 45) * 1000
-      @client.redis.hgetall(@name).each do |key, value|
-        user_id, client_id = key.split('.')
-        message = JSON.parse(value)
-        if message['online'] && message['at'] > forty_five_seconds_ago
-          result[user_id] ||= { :clients => {}, :userType => message['userType'] }
-          result[user_id][:clients][client_id] = message['userData'] || {}
-        end
-      end
-      result
+      client.request({
+        :to => name,
+        :op => :get,
+      })
+    end
+
+    def set(key, value)
+      client.request({
+        :to    => name,
+        :op    => :set,
+        :key   => key,
+        :value => value,
+      })
+    end
+
+    def sync(url)
+      return false if !valid_url?(url)
+      client.request({
+        :to  => name,
+        :op  => :sync,
+        :url => url,
+      })
+    end
+
+    def subscribe(url)
+      return false if !valid_url?(url)
+      client.request({
+        :to  => name,
+        :op  => :subscribe,
+        :url => url,
+        :ack => true,
+      })["op"] == "ack"
+    end
+
+    # use the same client that you used to subscribe
+    # or assign the client.id to the old client's id
+    # in order for this to work as expected
+    # otherwise this does not accomplish much
+    def unsubscribe
+      client.request({
+        :to     => name,
+        :op     => :unsubscribe,
+        :ack    => true,
+      })["op"] == "ack"
+    end
+
+    protected
+
+    def valid_url?(url)
+      uri = URI(url)
+      uri.scheme && uri.host
+      rescue
+      false
     end
   end
 
   class Status < Resource
-    def initialize(client, name)
-      super(client, "status:/#{client.subdomain}/#{name}")
-    end
+    TYPE = "status"
 
-    def get(key)
-      result = @client.redis.hget(@name, key)
-      result ? JSON.parse(result, :quirks_mode => true) : nil
-    end
-
-    def set(key, value)
-      @client.redis.hset(@name, key, value.to_json)
-      @client.redis.expire(@name, 12*60*60)
-      @client.redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
+    def get(key=nil)
+      result = super()
+      return result[key] || {} if key
+      result
     end
   end
 
+  class Presence < Resource
+    TYPE = "presence"
+  end
 
   class MessageList < Resource
-    def initialize(client, name)
-      super(client, "message:/#{client.subdomain}/#{name}")
-    end
-
-    def get
-      # Unfortunately we can't apply any maxAge policies.
-      result_arr = @client.redis.zrange(@name, -100, -1, :with_scores => true)
-      result = []
-      result_arr.each do |message_json, time|
-        message = JSON.parse(message_json, :quirks_mode => true)
-        result << [message, time]
-      end
-      result
-    end
+    TYPE = "message"
   end
 end
