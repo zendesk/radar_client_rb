@@ -19,11 +19,10 @@ module Radar
 
     def get
       result = {}
-      forty_five_seconds_ago = (Time.now.to_i - 45) * 1000
       @client.redis.hgetall(@name).each do |key, value|
         user_id, client_id = key.split('.')
         message = JSON.parse(value)
-        if message['online'] && message['at'] > forty_five_seconds_ago
+        if message['online']
           result[user_id] ||= { :clients => {}, :userType => message['userType'] }
           result[user_id][:clients][client_id] = message['userData'] || {}
         end
