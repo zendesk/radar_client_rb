@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    radar_client_rb (0.1.7)
+    radar_client_rb (0.1.8)
       redis
 
 GEM
@@ -13,6 +13,8 @@ GEM
     minitest (5.0.8)
     mocha (0.14.0)
       metaclass (~> 0.0.1)
+    private_gem (1.1.0)
+      bundler (~> 1.7)
     rake (10.1.0)
     redis (3.0.5)
 
@@ -23,5 +25,6 @@ DEPENDENCIES
   fakeredis
   minitest
   mocha
+  private_gem
   radar_client_rb!
   rake
