@@ -1,5 +1,6 @@
 require 'bundler/setup'
-require "private_gem/tasks"
+require 'bump/tasks'
+require 'private_gem/tasks'
 
 task :default => [:test]
 
