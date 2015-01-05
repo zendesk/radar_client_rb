@@ -1,12 +1,13 @@
 PATH
   remote: .
   specs:
-    radar_client_rb (0.1.8)
+    radar_client_rb (0.1.7)
       redis
 
 GEM
   remote: https://rubygems.org/
   specs:
+    bump (0.5.1)
     fakeredis (0.4.2)
       redis (~> 3.0.0)
     metaclass (0.0.1)
@@ -22,6 +23,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bump
   fakeredis
   minitest
   mocha

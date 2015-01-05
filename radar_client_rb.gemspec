@@ -15,4 +15,5 @@ Gem::Specification.new "radar_client_rb", Radar::Client::VERSION do |gem|
   gem.add_development_dependency("fakeredis")
   gem.add_development_dependency("mocha")
   gem.add_development_dependency("private_gem")
+  gem.add_development_dependency("bump")
 end
