@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    radar_client_rb (0.1.7)
+    radar_client_rb (0.1.8)
       redis
 
 GEM
