@@ -23,11 +23,24 @@ module Radar
         user_id, client_id = key.split('.')
         message = JSON.parse(value)
         if message['online']
-          result[user_id] ||= { :clients => {}, :userType => message['userType'] }
-          result[user_id][:clients][client_id] = message['userData'] || {}
+          sentry = message['sentry']
+          if !sentry || (sentry && sentries.include?(sentry) && !message_is_expired?(JSON.parse(sentries[sentry])))
+            result[user_id] ||= { :clients => {}, :userType => message['userType'] }
+            result[user_id][:clients][client_id] = message['userData'] || {}
+          end
         end
       end
       result
+    end
+
+    private
+
+    def sentries
+      @sentries ||= @client.redis.hgetall('sentry:/radar')
+    end
+
+    def message_is_expired?(message)
+      !message['expiration'] || message['expiration'] <= (Time.now.to_i * 1000)
     end
   end
 

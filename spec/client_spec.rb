@@ -9,14 +9,21 @@ describe Radar::Client do
   let(:user_id2) { 456 }
   let(:user_id4) { 100 }
   let(:user_id5) { 200 }
+  let(:user_id6) { 868 }
   let(:client_id1) { 'X2j7TjMTYWIz33vLABNW' }
   let(:client_id2) { 'Pl3kjj9d02PLsKNXlKSG' }
   let(:client_id3) { 'lkjasdiHJKSAHDIUHkJS' }
   let(:client_id4) { 'asdkjalsdkjaksdhasdk' }
   let(:client_id5) { 'asjkdhuiajahsdiuhajk' }
+  let(:client_id6) { 'FfJcrX9qt_w5a3X_AAAM' }
+  let(:client_id7) { 'MAAA_X3a5w_tq9XrcJfF' }
+  let(:sentry_id1) { '0a93bab00bdb932' }
+  let(:sentry_id2) { '239bdb00bab39a0' }
+  let(:sentry_id3) { '239bdb000bdb932' }
   let(:subdomain) { 'support' }
   let(:scope) { 'scope1' }
   let(:client) { Radar::Client.new(subdomain) }
+  let(:redis_sentries_key) { 'sentry:/radar' }
 
   before do
     Radar::Client.define_redis_retriever do |subdomain|
@@ -43,7 +50,8 @@ describe Radar::Client do
         :userData => 'userData1',
         :clientId => client_id1,
         :online => true,
-        :at => Time.now.to_i * 1000
+        :at => Time.now.to_i * 1000,
+        :sentry => sentry_id1
       }
     end
     let(:presence2) do
@@ -53,7 +61,8 @@ describe Radar::Client do
         :userData => 'userData2',
         :clientId => client_id2,
         :online => true,
-        :at => Time.now.to_i * 1000
+        :at => Time.now.to_i * 1000,
+        :sentry => sentry_id1
       }
     end
     let(:presence3) do
@@ -86,13 +95,56 @@ describe Radar::Client do
         :at => (Time.now.to_i - 100) * 1000
       }
     end
+    let(:presence6) do
+      {
+        :userId => user_id6,
+        :userType => 2,
+        :userData => 'userData6',
+        :clientId => client_id6,
+        :online => true,
+        :at => Time.now.to_i * 1000,
+        :sentry => sentry_id2
+      }
+    end
+    let(:presence7) do
+      {
+        :userId => user_id6,
+        :userType => 2,
+        :userData => 'userData7',
+        :clientId => client_id7,
+        :online => true,
+        :at => Time.now.to_i * 1000,
+        :sentry => sentry_id3
+      }
+    end
+    let(:sentry1) do
+      {
+        :name => sentry_id1,
+        :expiration => (Time.now.to_i + 100) * 1000,
+        :host => "precise64",
+        :port => "8000"
+      }
+    end
+    let(:sentry2) do
+      {
+        :name => sentry_id2,
+        :expiration => (Time.now.to_i - 100) * 1000,
+        :host => "precise64",
+        :port => "8000"
+      }
+    end
 
     before do
       fakeredis.hset(key, "#{user_id1}.#{client_id1}", presence1.to_json)
       fakeredis.hset(key, "#{user_id2}.#{client_id2}", presence2.to_json)
       fakeredis.hset(key, "#{user_id1}.#{client_id3}", presence3.to_json)
       fakeredis.hset(key, "#{user_id4}.#{client_id4}", presence4.to_json) # offline
-      fakeredis.hset(key, "#{user_id5}.#{client_id5}", presence5.to_json) # timeout
+
+      fakeredis.hset(key, "#{user_id6}.#{client_id6}", presence6.to_json) # sentry expired
+      fakeredis.hset(key, "#{user_id6}.#{client_id7}", presence7.to_json) # sentry offline
+
+      fakeredis.hset(redis_sentries_key, sentry_id1, sentry1.to_json)
+      fakeredis.hset(redis_sentries_key, sentry_id2, sentry2.to_json)
     end
 
     after do
@@ -111,7 +163,7 @@ describe Radar::Client do
                client_id2 =>"userData2" },
             :userType=>4 }
       }
-      assert client.presence(scope).get, result
+      assert_equal result.to_json, client.presence(scope).get.to_json
     end
 
     it 'does not crash if the key does not exist' do
