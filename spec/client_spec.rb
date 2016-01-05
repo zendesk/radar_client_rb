@@ -72,7 +72,8 @@ describe Radar::Client do
         :userData => 'userData3',
         :clientId => client_id3,
         :online => true,
-        :at => Time.now.to_i * 1000
+        :at => Time.now.to_i * 1000,
+        :sentry => sentry_id1
       }
     end
     let(:presence4) do
@@ -167,7 +168,7 @@ describe Radar::Client do
     end
 
     it 'does not crash if the key does not exist' do
-      assert_equal client.presence('inexistant').get, {}
+      assert_equal client.presence('nonexistant').get, {}
     end
   end
 
@@ -212,8 +213,8 @@ describe Radar::Client do
       )
       assert_equal client.message(scope).get, [[message1, 123], [message2, 124]]
     end
-    it 'does not crash on inexistant keys' do
-      assert_equal client.message('inexistant').get, []
+    it 'does not crash on nonexistant keys' do
+      assert_equal client.message('nonexistant').get, []
     end
   end
 end

@@ -19,27 +19,34 @@ module Radar
 
     def get
       result = {}
-      @client.redis.hgetall(@name).each do |key, value|
-        user_id, client_id = key.split('.')
-        message = JSON.parse(value)
-        if message['online'] && is_sentry_online?(message['sentry'])
-          result[user_id] ||= { :clients => {}, :userType => message['userType'] }
-          result[user_id][:clients][client_id] = message['userData'] || {}
-        end
+
+      clients = get_clients.select { |client| client['online'] }
+      sentries = clients.map { |client| client['sentry'] }
+      online_sentries = select_online_sentries(sentries)
+      online_clients = clients.select { |client| online_sentries.include?(client['sentry']) }
+
+      online_clients.each do |client|
+        user_id = client['userId']
+        result[user_id] ||= { :clients => {}, :userType => client['userType'] }
+        result[user_id][:clients][client['clientId']] = client['userData'] || {}
       end
       result
     end
 
     private
 
-    def sentries
-      @sentries ||= @client.redis.hgetall('sentry:/radar')
+    def get_clients
+      @client.redis.hgetall(@name).values.map { |value| JSON.parse(value) }
     end
 
-    def is_sentry_online?(sentry)
-      return true unless sentry
+    def select_online_sentries(sentry_ids)
+      return [] unless sentry_ids && sentry_ids.any?
+      online_sentries = @client.redis.hmget('sentry:/radar', *sentry_ids.uniq)
+        .select { |x| !x.nil? }
+        .map { |data| JSON.parse(data) }
+        .select { |sentry| !message_is_expired?(sentry) }
 
-      sentries.include?(sentry) && !message_is_expired?(JSON.parse(sentries[sentry]))
+      online_sentries.map { |sentry| sentry['name'] }
     end
 
     def message_is_expired?(message)
