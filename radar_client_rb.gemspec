@@ -1,7 +1,6 @@
 require_relative 'lib/radar_client_rb/version'
 
 Gem::Specification.new "radar_client_rb", Radar::Client::VERSION do |gem|
-  gem.version = "1.0.1"
   gem.authors = ["Patrick O'Brien", "Ciaran Archer", "Vanchi K"]
   gem.email = "radar@zendesk.com"
   gem.homepage = "http://github.com/zendesk/radar_client_rb"
