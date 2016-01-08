@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     radar_client_rb (1.0.3)
-      redis
+      redis (>= 3, < 3.2.1)
 
 GEM
   remote: https://rubygems.org/
@@ -17,7 +17,7 @@ GEM
     private_gem (1.1.0)
       bundler (~> 1.7)
     rake (10.1.0)
-    redis (3.0.5)
+    redis (3.0.7)
 
 PLATFORMS
   ruby
@@ -30,3 +30,6 @@ DEPENDENCIES
   private_gem
   radar_client_rb!
   rake
+
+BUNDLED WITH
+   1.11.2
