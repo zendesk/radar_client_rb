@@ -2,21 +2,28 @@ require 'logger'
 
 module Radar
   class Resource
+    attr_reader :client, :scope
     def initialize(client, name)
       @client = client
       @name = name
+      @scope = build_scope(name)
+    end
+
+    def type
+      nil
     end
 
     def logger
       @logger ||= defined?(Rails) ? Rails.logger : Logger.new($stdout)
     end
+
+    private
+    def build_scope(name)
+      "#{type}:/#{@client.subdomain}/#{name}"
+    end
   end
 
   class Presence < Resource
-    def initialize(client, name)
-      super(client, "presence:/#{client.subdomain}/#{name}")
-    end
-
     def get
       result = {}
 
@@ -55,8 +62,8 @@ module Radar
   end
 
   class Status < Resource
-    def initialize(client, name)
-      super(client, "status:/#{client.subdomain}/#{name}")
+    def type
+      'status'
     end
 
     def get(key)
@@ -84,10 +91,6 @@ module Radar
 
 
   class MessageList < Resource
-    def initialize(client, name)
-      super(client, "message:/#{client.subdomain}/#{name}")
-    end
-
     def get
       # Unfortunately we can't apply any maxAge policies.
       result_arr = @client.redis.zrange(@name, -100, -1, :with_scores => true)
