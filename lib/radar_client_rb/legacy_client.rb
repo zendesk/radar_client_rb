@@ -1,4 +1,4 @@
-require_relative './resource.rb'
+require_relative './resource/resource.rb'
 
 module Radar
   class LegacyClient
