@@ -4,7 +4,7 @@ module Radar
   class Message
     attr_reader :op, :to, :key, :value
 
-    def initialize(op:, to:, value: nil, key: nil)
+    def initialize(op:, to:, key: nil, value: nil)
       not_empty!(:op, op)
       not_empty!(:to, to)
 
@@ -33,6 +33,10 @@ module Radar
 
     def to_s
       "Radar::Message: #{to_json}"
+    end
+
+    def merge(op: nil, to: nil, key: nil, value: nil)
+      Message.new(op: op || @op, to: to || @to, key: key || @key, value: value || @value)
     end
 
     private 

@@ -42,6 +42,19 @@ describe Radar::Message do
     end
   end
 
+  describe '.merge' do
+    it 'creates a new message from an existing message, overriding some properties' do
+      msg = Radar::Message.new(op: 'foo', to: 'bar', key: 'baz', value: 'qux')
+      # msg2 = Radar::Message.new(op: 'foo', to: 'bar', key: 'baz', value: 'qux')
+      msg2 = msg.merge(value: 'zot')
+      assert !msg.equal?(msg2)
+      assert_equal 'foo', msg2.op
+      assert_equal 'bar', msg2.to
+      assert_equal 'baz', msg2.key
+      assert_equal 'zot', msg2.value
+    end
+  end
+
   describe '#to_json' do
     it 'serializes message fields' do
       message = Radar::Message.new(op: 'o', to: 't', key: 'k', value: 'v')

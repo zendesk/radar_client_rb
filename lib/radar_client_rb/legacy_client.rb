@@ -1,8 +1,9 @@
-require_relative './resource/resource.rb'
+require_relative './resource/resource'
+require_relative './legacy_redis_provider'
 
 module Radar
   class LegacyClient
-    attr_accessor :subdomain
+    attr_reader :subdomain, :provider
 
     def self.redis_retriever_defined?
       defined?(@@redis_retriever) && @@redis_retriever
@@ -14,6 +15,7 @@ module Radar
 
     def initialize(subdomain)
       @subdomain = subdomain
+      @provider = LegacyRedisProvider.new(redis)
     end
 
     def presence(name)

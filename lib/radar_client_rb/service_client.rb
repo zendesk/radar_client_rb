@@ -1,6 +1,6 @@
-# require_relative './resource/status'
-# require_relative './resource/presence'
-require_relative './resource/resource'
+require_relative './resource/status'
+require_relative './resource/presence'
+require_relative './resource/message_list'
 
 module Radar
   class ServiceClient

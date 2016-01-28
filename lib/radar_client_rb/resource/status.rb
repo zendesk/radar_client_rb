@@ -1,4 +1,5 @@
 require_relative './resource'
+require_relative '../message'
 
 module Radar
   class Status < Resource
@@ -7,25 +8,15 @@ module Radar
     end
 
     def get(key)
-      result = @client.redis.hget(@name, key)
-      result ? JSON.parse(result, :quirks_mode => true) : nil
+      message = Message.new(op: 'get', to: @scope, key: key)
+      response = @client.provider.process(message)
+      response.value
     end
 
     def set(key, value)
-      redis = @client.redis
-      redis.multi do |redis|
-        redis.hset(@name, key, value.to_json)
-        redis.expire(@name, 12*60*60)
-        redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
-      end
-
-      client = redis.respond_to?(:client) && redis.client
-      client_info = if client && client.respond_to?(:host) && client.respond_to?(:port)
-        "Client: #{client.host}:#{client.port}"
-      else
-        "unknown"
-      end
-      logger.debug "Set Status: #{key}, #{value}, #{client_info}"
+      message = Message.new(op: 'set', to: @scope, key: key, value: value)
+      response = @client.provider.process(message)
+      nil
     end
   end
 end
