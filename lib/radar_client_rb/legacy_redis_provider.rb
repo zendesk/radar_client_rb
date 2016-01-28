@@ -18,10 +18,16 @@ module Radar
         if message.op == 'get'
           get_presence(message)
         else
-          Message.new(op: message.op, to: message.to, value: {})
+          raise NotImplementedError
+        end
+      elsif message.to.start_with?('message:/')
+        if message.op == 'get'
+          get_message_list(message)
+        else
+          raise NotImplementedError
         end
       else
-        raise 'unsupported resource type'
+        raise NotImplementedError
       end
     end
 
@@ -83,6 +89,15 @@ module Radar
 
     def is_expired?(item)
       !item['expiration'] || item['expiration'] <= (Time.now.to_i * 1000)
+    end
+
+    def get_message_list(message)
+      raw = @redis.zrange(message.to, -100, -1, :with_scores => true)
+      result = raw.map do |item_json, time|
+        item = JSON.parse(item_json, :quirks_mode => true)
+        [item, time]
+      end
+      message.merge(value: result)
     end
   end
 end
