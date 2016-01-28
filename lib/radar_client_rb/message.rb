@@ -27,7 +27,7 @@ module Radar
 
       msg[:key] = @key unless @key == nil
       msg[:value] = @value unless @value == nil
-      
+
       JSON.generate(msg)
     end
 
@@ -39,7 +39,7 @@ module Radar
       Message.new(op: op || @op, to: to || @to, key: key || @key, value: value || @value)
     end
 
-    private 
+    private
 
     def not_empty!(param, value)
       raise ArgumentError, "#{param} must not be nil or empty" unless !value.nil? && !value.empty?
