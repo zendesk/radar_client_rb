@@ -21,5 +21,9 @@ module Radar
     def build_scope(name)
       "#{type}:/#{@client.subdomain}/#{name}"
     end
+
+    def provider
+      @client.provider
+    end
   end
 end

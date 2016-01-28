@@ -8,11 +8,8 @@ module Radar
 
     def get
       message = Message.new(op: 'get', to: @scope)
-      response = @client.provider.process(message)
+      response = provider.process(message)
       response.value
     end
-
-    private
-
   end
 end

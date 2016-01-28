@@ -9,13 +9,13 @@ module Radar
 
     def get(key)
       message = Message.new(op: 'get', to: @scope, key: key)
-      response = @client.provider.process(message)
+      response = provider.process(message)
       response.value
     end
 
     def set(key, value)
       message = Message.new(op: 'set', to: @scope, key: key, value: value)
-      response = @client.provider.process(message)
+      response = provider.process(message)
       nil
     end
   end
