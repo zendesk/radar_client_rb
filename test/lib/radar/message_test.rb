@@ -67,4 +67,28 @@ describe Radar::Message do
     end
   end
 
+  describe 'structural equality' do
+    let(:msg1) { Radar::Message.new(op: 'a', to: 'b', key: 'k', value:'v')}
+    let(:msg2) { Radar::Message.new(op: 'a', to: 'b', key: 'k', value:'v')}
+    
+    it '==' do
+      assert msg1 == msg2
+    end
+
+    it '===' do
+      assert msg1 === msg2
+    end
+    
+    it 'eql?' do
+      assert msg1.eql? msg2
+    end
+    
+    it 'can be used in a hashmap' do
+      x = {}
+      x[msg1] = 'x'
+      assert x.has_key?(msg1)
+      assert x.has_key?(msg2)
+    end
+  end
+
 end

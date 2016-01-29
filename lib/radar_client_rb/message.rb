@@ -39,6 +39,16 @@ module Radar
       Message.new(op: op || @op, to: to || @to, key: key || @key, value: value || @value)
     end
 
+    def ==(o)
+      o.class == self.class && o.op == op && o.to == to && o.key == key && o.value == value
+    end
+    
+    alias_method :eql?, :==
+
+    def hash
+      op.hash + to.hash + key.hash + value.hash
+    end
+
     private
 
     def not_empty!(param, value)
