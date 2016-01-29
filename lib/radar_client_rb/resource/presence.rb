@@ -8,7 +8,7 @@ module Radar
 
     def get
       message = Message.new(op: 'get', to: @scope)
-      response = provider.process(message)
+      response = process(message)
       response.value
     end
   end

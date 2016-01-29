@@ -22,8 +22,8 @@ module Radar
       "#{type}:/#{@client.subdomain}/#{name}"
     end
 
-    def provider
-      @client.provider
+    def process(message)
+      @client.provider.process(message)
     end
   end
 end
