@@ -8,9 +8,10 @@ module Radar
     end
 
     def get(key)
+      key = String(key)
       message = Message.new(op: 'get', to: @scope, key: key)
       response = process(message)
-      response.value
+      response.value[key]
     end
 
     def set(key, value)

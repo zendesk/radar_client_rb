@@ -17,8 +17,6 @@ describe Radar::Message do
 
       assert_exception(ArgumentError) { Radar::Message.new() }
 
-      assert_exception(ArgumentError, /^to/) { Radar::Message.new(attrs.merge(to: nil)) }      
-      assert_exception(ArgumentError, /^to/) { Radar::Message.new(attrs.merge(to: '')) }
       assert_exception(ArgumentError, /^op/) { Radar::Message.new(attrs.merge(op: nil)) }      
       assert_exception(ArgumentError, /^op/) { Radar::Message.new(attrs.merge(op: '')) }    
     end

@@ -32,7 +32,7 @@ describe Radar::ServiceClient do
     it 'can retrieve a status' do
       mock_provider.expects(:process)
         .with() { |m| m == Radar::Message.new(op: 'get', to: full_scope, key: user_id1) }
-        .returns(msg.merge(value: status1))
+        .returns(msg.merge(value: { '123' => status1 }))
 
       assert_equal status1, client.status(scope).get(user_id1)
     end

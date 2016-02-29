@@ -2,16 +2,16 @@ require 'json'
 
 module Radar
   class Message
-    attr_reader :op, :to, :key, :value
+    attr_reader :op, :to, :key, :value, :options
 
-    def initialize(op:, to:, key: nil, value: nil)
+    def initialize(op:, to: nil, key: nil, value: nil, options: nil)
       not_empty!(:op, op)
-      not_empty!(:to, to)
 
       @op = op
       @to = to
-      @key = key
+      @key = String(key)
       @value = value
+      @options = options
     end
 
     def self.from_json(json)
@@ -21,12 +21,13 @@ module Radar
 
     def to_json
       msg = {
-        op: @op,
-        to: @to
+        op: @op
       }
 
-      msg[:key] = @key unless @key == nil
+      msg[:to] = @to unless @to == nil
+      msg[:key] = @key unless @key == nil || @key == ''
       msg[:value] = @value unless @value == nil
+      msg[:options] = @options unless @options == nil || @options.size == 0
 
       JSON.generate(msg)
     end
@@ -40,7 +41,7 @@ module Radar
     end
 
     def ==(o)
-      o.class == self.class && o.op == op && o.to == to && o.key == key && o.value == value
+      o.class == self.class && o.op == op && o.to == to && o.key == key && o.value == value && o.options == options
     end
     
     alias_method :eql?, :==

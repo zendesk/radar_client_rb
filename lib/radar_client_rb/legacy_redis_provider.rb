@@ -36,7 +36,9 @@ module Radar
     def get_status(message)
       raw = @redis.hget(message.to, message.key)
       result = raw ? JSON.parse(raw, :quirks_mode => true) : nil
-      message.merge(value: result)
+      val = {}
+      val.store(message.key, result)
+      message.merge(value: val)
     end
 
     def set_status(message)

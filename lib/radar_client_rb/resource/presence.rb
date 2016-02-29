@@ -7,7 +7,7 @@ module Radar
     end
 
     def get
-      message = Message.new(op: 'get', to: @scope)
+      message = Message.new(op: 'get', to: @scope, options: {version: 2})
       response = process(message)
       response.value
     end
