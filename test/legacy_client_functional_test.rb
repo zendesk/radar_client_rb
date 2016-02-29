@@ -176,7 +176,6 @@ describe Radar::Client do
           :userType => 2
         }
       }
-
       assert_equal expected.to_json, client.presence(scope).get.to_json
     end
 
@@ -224,14 +223,14 @@ describe Radar::Client do
     end
 
     it 'can retrieve a status' do
-      assert_equal client.status(scope).get(user_id1), status1
-      assert_equal client.status(scope).get(user_id2), status2
-      assert_equal client.status(scope).get(user_id4), nil
-      assert_equal client.status('inexistant').get('non-key'), nil
+      assert_equal status1, client.status(scope).get(user_id1), status1
+      assert_equal status2, client.status(scope).get(user_id2), status2
+      assert_nil client.status(scope).get(user_id4)
+      assert_nil client.status('inexistant').get('non-key')
     end
 
     it 'can set a status' do
-      fakeredis.expects(:publish).with(key, { :to => key, :op => 'set', :key => user_id4, :value => { :state => 'updated'} }.to_json)
+      fakeredis.expects(:publish).with(key, { :op => 'set', :to => key, :key => String(user_id4), :value => { :state => 'updated'} }.to_json)
       fakeredis.expects(:expire).with(key, 12*60*60)
       client.status(scope).set(user_id4, { :state => 'updated' })
       assert_equal fakeredis.hget(key, user_id4), { :state => 'updated' }.to_json
