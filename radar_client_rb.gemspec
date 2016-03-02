@@ -8,6 +8,7 @@ Gem::Specification.new "radar_client_rb", Radar::Client::VERSION do |gem|
   gem.files = Dir.glob("lib/**/*")
 
   gem.add_runtime_dependency("redis", ">= 3", "< 3.2.1")
+  gem.add_runtime_dependency('faraday')
 
   gem.add_development_dependency("rake")
   gem.add_development_dependency("minitest")
