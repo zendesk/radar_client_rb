@@ -10,7 +10,7 @@ This gem lets you read radar resources directly from Redis. You can also set rad
 require 'radar_client_rb'
 
 
-client = Radar::Client.new(redis_connection, account_name, user_id)
+client = Radar::Client.new(account_name, redis_connection)
 
 # read resources
 msg = client.message('chat/123/messages').get
@@ -23,7 +23,7 @@ client.status('ticket/1').set(user_id4, { :state => 'updated' })
 ```
 
 ## Copyright and license
-Copyright 2015 Zendesk
+Copyright 2016 Zendesk
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 
 You may obtain a copy of the License at

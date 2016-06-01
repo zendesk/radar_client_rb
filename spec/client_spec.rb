@@ -22,14 +22,8 @@ describe Radar::Client do
   let(:sentry_missing_id) { '239bdb000bdb932' }
   let(:subdomain) { 'support' }
   let(:scope) { 'scope1' }
-  let(:client) { Radar::Client.new(subdomain) }
+  let(:client) { Radar::Client.new(subdomain, fakeredis) }
   let(:redis_sentries_key) { 'sentry:/radar' }
-
-  before do
-    Radar::Client.define_redis_retriever do |subdomain|
-      fakeredis
-    end
-  end
 
   it 'can be instantiated' do
     assert client
