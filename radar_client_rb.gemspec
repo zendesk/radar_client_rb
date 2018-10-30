@@ -7,7 +7,9 @@ Gem::Specification.new "radar_client_rb", Radar::Client::VERSION do |gem|
   gem.summary = gem.description = "Read/Write Radar Resources from Redis through Ruby"
   gem.files = Dir.glob("lib/**/*")
 
-  gem.add_runtime_dependency("redis", ">= 3", "< 3.2.1")
+  gem.required_ruby_version = ["~> 2.2", ">= 2.2"]
+
+  gem.add_runtime_dependency("redis", "~> 3.3")
 
   gem.add_development_dependency("rake")
   gem.add_development_dependency("minitest")
