@@ -72,7 +72,7 @@ module Radar
         redis.publish(@name, { :to => @name, :op => 'set', :key => key, :value => value }.to_json)
       end
 
-      client = redis.respond_to?(:client) && redis.connection
+      client = redis.respond_to?(:connection) && redis.connection
       client_info = if client && client.respond_to?(:host) && client.respond_to?(:port)
         "Client: #{client.host}:#{client.port}"
       else
