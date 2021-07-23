@@ -7,9 +7,8 @@ jobs:
     strategy:
       matrix:
         rvm:
-          - 2.2
-          - 2.3
-          - 2.4
+          - 2.6
+          - 2.7
     steps:
       - uses: zendesk/checkout@v2
       - uses: zendesk/setup-ruby@v1
