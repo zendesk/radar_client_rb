@@ -3,7 +3,7 @@
 This gem lets you read radar resources directly from Redis. You can also set radar Status resource.
 
 [![Gem Version](https://badge.fury.io/rb/radar_client_rb.svg)](https://badge.fury.io/rb/radar_client_rb)
-[![Build Status](https://travis-ci.org/zendesk/radar_client_rb.svg?branch=master)](https://travis-ci.org/zendesk/radar_client_rb)
+![CI](https://github.com/zendesk/radar_client_rb/workflows/CI/badge.svg)
 
 ```ruby
 
