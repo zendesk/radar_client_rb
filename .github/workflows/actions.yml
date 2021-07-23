@@ -16,7 +16,7 @@ jobs:
           ruby-version: ${{ matrix.rvm }}
       - name: install
         run: |
-          gem install bundler -v 1.17.1
+          gem install bundler -v 1.17.2
           bundle install
       - name: rake test
         run: bundle exec rake test
