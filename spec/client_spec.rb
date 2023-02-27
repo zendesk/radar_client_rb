@@ -1,7 +1,7 @@
 require 'minitest/autorun'
 require 'radar_client_rb'
 require 'redis'
-require 'mocha/setup'
+require 'mocha/minitest'
 
 describe Radar::Client do
   let(:user_id1) { 123 }
