@@ -220,8 +220,8 @@ describe Radar::Client do
     it 'can retrieve a status' do
       assert_equal client.status(scope).get(user_id1), status1
       assert_equal client.status(scope).get(user_id2), status2
-      assert_equal client.status(scope).get(user_id4), nil
-      assert_equal client.status('inexistant').get('non-key'), nil
+      assert_nil client.status(scope).get(user_id4)
+      assert_nil client.status('inexistant').get('non-key')
     end
 
     it 'can set a status' do
