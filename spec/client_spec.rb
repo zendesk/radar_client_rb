@@ -1,10 +1,9 @@
 require 'minitest/autorun'
 require 'radar_client_rb'
-require 'fakeredis'
+require 'redis'
 require 'mocha/setup'
 
 describe Radar::Client do
-  let(:fakeredis) { FakeRedis::Redis.new }
   let(:user_id1) { 123 }
   let(:user_id2) { 456 }
   let(:user_id4) { 100 }
@@ -22,7 +21,8 @@ describe Radar::Client do
   let(:sentry_missing_id) { '239bdb000bdb932' }
   let(:subdomain) { 'support' }
   let(:scope) { 'scope1' }
-  let(:client) { Radar::Client.new(subdomain, fakeredis) }
+  let(:redis_client) { Redis.new(url: ENV.fetch('REDIS_URL')) }
+  let(:client) { Radar::Client.new(subdomain, redis_client) }
   let(:redis_sentries_key) { 'sentry:/radar' }
 
   it 'can be instantiated' do
@@ -125,19 +125,20 @@ describe Radar::Client do
     end
 
     before do
-      fakeredis.hset(key, key_for_presence(presence1), presence1.to_json)
-      fakeredis.hset(key, key_for_presence(presence2), presence2.to_json)
-      fakeredis.hset(key, key_for_presence(presence3), presence3.to_json)
-      fakeredis.hset(key, key_for_presence(client_offline), client_offline.to_json) # offline
-      fakeredis.hset(key, key_for_presence(client_expired_sentry), client_expired_sentry.to_json) # sentry expired
-      fakeredis.hset(key, key_for_presence(presence7), presence7.to_json) # sentry offline
+      redis_client.flushdb
+      redis_client.hset(key, key_for_presence(presence1), presence1.to_json)
+      redis_client.hset(key, key_for_presence(presence2), presence2.to_json)
+      redis_client.hset(key, key_for_presence(presence3), presence3.to_json)
+      redis_client.hset(key, key_for_presence(client_offline), client_offline.to_json) # offline
+      redis_client.hset(key, key_for_presence(client_expired_sentry), client_expired_sentry.to_json) # sentry expired
+      redis_client.hset(key, key_for_presence(presence7), presence7.to_json) # sentry offline
 
-      fakeredis.hset(redis_sentries_key, sentry_ok_id, sentry_ok.to_json)
-      fakeredis.hset(redis_sentries_key, sentry_expired_id, sentry_expired.to_json)
+      redis_client.hset(redis_sentries_key, sentry_ok_id, sentry_ok.to_json)
+      redis_client.hset(redis_sentries_key, sentry_expired_id, sentry_expired.to_json)
     end
 
     after do
-      fakeredis.del(key)
+      redis_client.del(key)
     end
 
     it 'can retrieve a presence' do
@@ -152,15 +153,15 @@ describe Radar::Client do
                client_id2 =>"userData2" },
             :userType=>4 }
       }
-      assert_equal result.to_json, client.presence(scope).get.to_json
+      assert_equal result, client.presence(scope).get
     end
 
     it 'returns clients belonging to valid sentries' do
-      fakeredis.del(key)
-      fakeredis.del(redis_sentries_key)
+      redis_client.del(key)
+      redis_client.del(redis_sentries_key)
 
-      fakeredis.hset(key, key_for_presence(presence1), presence1.to_json)
-      fakeredis.hset(redis_sentries_key, sentry_ok_id, sentry_ok.to_json)
+      redis_client.hset(key, key_for_presence(presence1), presence1.to_json)
+      redis_client.hset(redis_sentries_key, sentry_ok_id, sentry_ok.to_json)
 
       expected = {
         user_id1 => {
@@ -171,25 +172,25 @@ describe Radar::Client do
         }
       }
 
-      assert_equal expected.to_json, client.presence(scope).get.to_json
+      assert_equal expected, client.presence(scope).get
     end
 
     it 'does not return clients belonging to missing sentries' do
-      fakeredis.del(key)
-      fakeredis.hset(key, key_for_presence(client_missing_sentry), client_missing_sentry.to_json)
+      redis_client.del(key)
+      redis_client.hset(key, key_for_presence(client_missing_sentry), client_missing_sentry.to_json)
 
       assert_equal client.presence(scope).get, {}
     end
-    
+
     it 'does not return clients belonging to expired sentries' do
-      fakeredis.del(key)
-      fakeredis.hset(key, key_for_presence(client_expired_sentry), client_expired_sentry.to_json)
+      redis_client.del(key)
+      redis_client.hset(key, key_for_presence(client_expired_sentry), client_expired_sentry.to_json)
 
       assert_equal client.presence(scope).get, {}
     end
     it 'does not return clients which are offline' do
-      fakeredis.del(key)
-      fakeredis.hset(key, key_for_presence(client_offline), client_offline.to_json)
+      redis_client.del(key)
+      redis_client.hset(key, key_for_presence(client_offline), client_offline.to_json)
 
       assert_equal client.presence(scope).get, {}
     end
@@ -209,12 +210,12 @@ describe Radar::Client do
     let(:status2) { { 'hello' => 'world' } }
 
     before do
-      fakeredis.hset(key, user_id1, status1.to_json)
-      fakeredis.hset(key, user_id2, status2.to_json)
+      redis_client.hset(key, user_id1, status1.to_json)
+      redis_client.hset(key, user_id2, status2.to_json)
     end
 
     after do
-      fakeredis.del(key)
+      redis_client.del(key)
     end
 
     it 'can retrieve a status' do
@@ -225,10 +226,9 @@ describe Radar::Client do
     end
 
     it 'can set a status' do
-      fakeredis.expects(:publish).with(key, { :to => key, :op => 'set', :key => user_id4, :value => { :state => 'updated'} }.to_json)
-      fakeredis.expects(:expire).with(key, 12*60*60)
       client.status(scope).set(user_id4, { :state => 'updated' })
-      assert_equal fakeredis.hget(key, user_id4), { :state => 'updated' }.to_json
+      assert_equal redis_client.hget(key, user_id4), { :state => 'updated' }.to_json
+      assert_in_delta 12*60*60, redis_client.ttl(key), 3
     end
   end
 
@@ -238,11 +238,11 @@ describe Radar::Client do
     let(:message2) { { 'hello' => 'world' } }
 
     it 'can retrieve messages' do
-      # have to do this way, stupid fakeredis does not support -ve indices for zrange.
-      fakeredis.expects(:zrange).with(key, -100, -1, :with_scores => true).returns(
-        [[message1.to_json, 123], [ message2.to_json, 124]]
-      )
-      assert_equal client.message(scope).get, [[message1, 123], [message2, 124]]
+      124.times do |i|
+        redis_client.zadd(key, i, "message_#{i}".to_json)
+      end
+      expected = (24..123).map { |i| ["message_#{i}", i] }
+      assert_equal expected, client.message(scope).get
     end
     it 'does not crash on nonexistant keys' do
       assert_equal client.message('nonexistant').get, []

@@ -8,8 +8,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     bump (0.10.0)
-    fakeredis (0.8.0)
-      redis (~> 4.1)
     minitest (5.14.4)
     mocha (1.13.0)
     rake (13.0.6)
@@ -20,7 +18,6 @@ PLATFORMS
 
 DEPENDENCIES
   bump
-  fakeredis
   minitest
   mocha
   radar_client_rb!

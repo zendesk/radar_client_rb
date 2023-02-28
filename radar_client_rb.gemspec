@@ -13,7 +13,6 @@ Gem::Specification.new "radar_client_rb", Radar::Client::VERSION do |gem|
 
   gem.add_development_dependency("rake", ">=12.3.3")
   gem.add_development_dependency("minitest")
-  gem.add_development_dependency("fakeredis")
   gem.add_development_dependency("mocha")
   gem.add_development_dependency("bump")
 end

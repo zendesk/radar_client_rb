@@ -4,6 +4,11 @@ jobs:
   main:
     name: Test with Ruby ${{ matrix.ruby-version }}
     runs-on: ubuntu-20.04
+    services:
+      redis:
+        image: redis:7.0.5
+        ports:
+          - 6379:6379
     strategy:
       matrix:
         ruby-version:
@@ -18,3 +23,5 @@ jobs:
           bundler-cache: true
       - name: rake test
         run: bundle exec rake test
+        env:
+          REDIS_URL: 'redis://localhost:6379'
