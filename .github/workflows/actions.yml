@@ -2,21 +2,26 @@ name: CI
 on: [push]
 jobs:
   main:
-    name: rake test
-    runs-on: ubuntu-18.04
+    name: Test with Ruby ${{ matrix.ruby-version }}
+    runs-on: ubuntu-20.04
+    services:
+      redis:
+        image: redis:7.0.5
+        ports:
+          - 6379:6379
     strategy:
       matrix:
-        rvm:
-          - 2.6
-          - 2.7
+        ruby-version:
+          - "2.6"
+          - "2.7"
+          - "3.2"
     steps:
-      - uses: zendesk/checkout@v2
+      - uses: zendesk/checkout@v3
       - uses: zendesk/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.rvm }}
-      - name: install
-        run: |
-          gem install bundler -v 1.17.2
-          bundle install
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
       - name: rake test
         run: bundle exec rake test
+        env:
+          REDIS_URL: 'redis://localhost:6379'
