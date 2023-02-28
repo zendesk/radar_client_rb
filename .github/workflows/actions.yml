@@ -1,7 +1,13 @@
 name: CI
-on: [push]
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
 jobs:
-  main:
+  tests:
     name: Test with Ruby ${{ matrix.ruby-version }}
     runs-on: ubuntu-20.04
     services:
@@ -25,3 +31,18 @@ jobs:
         run: bundle exec rake test
         env:
           REDIS_URL: 'redis://localhost:6379'
+
+  tests_successful:
+    name: Tests passing?
+    needs: tests
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if ${{ needs.tests.result == 'success' }}
+          then
+            echo "All tests pass"
+          else
+            echo "Some tests failed"
+            false
+          fi
