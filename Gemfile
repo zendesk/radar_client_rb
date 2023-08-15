@@ -1,3 +1,1 @@
-source 'https://rubygems.org'
-
-gemspec
+eval_gemfile 'gemfiles/redis5.gemfile'
