@@ -8,7 +8,7 @@ on:
 
 jobs:
   tests:
-    name: Test with Ruby ${{ matrix.ruby-version }}
+    name: Test with Ruby ${{ matrix.ruby-version }} and ${{ matrix.gemfile }}
     runs-on: ubuntu-20.04
     services:
       redis:
@@ -21,6 +21,13 @@ jobs:
           - "2.6"
           - "2.7"
           - "3.2"
+        gemfile:
+          - "redis4"
+          - "redis5"
+
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+
     steps:
       - uses: zendesk/checkout@v3
       - uses: zendesk/setup-ruby@v1
