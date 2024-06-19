@@ -1,0 +1,15 @@
+name: Env related workflow Branch
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  deployment:
+    runs-on: [self-hosted, temp-runner-denis]
+    environment: rubygems-publish
+    steps:
+      - name: deploy
+        env:
+          MY_SECRET_ENV_VAR: ${{ secrets.RUBY_GEMS_API_KEY }}
+        run: echo $MY_SECRET_ENV_VAR > secret-file.txt
