@@ -4,12 +4,12 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   tests:
     name: Test with Ruby ${{ matrix.ruby-version }} and ${{ matrix.gemfile }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     services:
       redis:
         image: redis:7.0.5
@@ -18,10 +18,9 @@ jobs:
     strategy:
       matrix:
         ruby-version:
-          - "2.6"
-          - "2.7"
           - "3.2"
           - "3.3"
+          - "3.4"
         gemfile:
           - "redis4"
           - "redis5"
@@ -30,8 +29,8 @@ jobs:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
 
     steps:
-      - uses: zendesk/checkout@v3
-      - uses: zendesk/setup-ruby@v1
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
