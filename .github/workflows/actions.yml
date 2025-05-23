@@ -9,7 +9,7 @@ on:
 jobs:
   tests:
     name: Test with Ruby ${{ matrix.ruby-version }} and ${{ matrix.gemfile }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     services:
       redis:
         image: redis:7.0.5
@@ -29,8 +29,8 @@ jobs:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
 
     steps:
-      - uses: zendesk/checkout@v3
-      - uses: zendesk/setup-ruby@v1
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
