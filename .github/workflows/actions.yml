@@ -18,10 +18,9 @@ jobs:
     strategy:
       matrix:
         ruby-version:
-          - "2.6"
-          - "2.7"
           - "3.2"
           - "3.3"
+          - "3.4"
         gemfile:
           - "redis4"
           - "redis5"
